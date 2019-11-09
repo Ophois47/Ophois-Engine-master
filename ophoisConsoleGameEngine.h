@@ -229,21 +229,21 @@ public:
 		m_nScreenWidth = width;
 		m_nScreenHeight = height;
 
-		// Change console visual size to a minimum so ScreenBuffer can shrink
-		// below the actual visual size
+		// Change Console Visual Size to a Minimum so ScreenBuffer can Shrink
+		// Below the Actual Visual Size
 		m_rectWindow = { 0, 0, 1, 1 };
 		SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow);
 
-		// Set the size of the screen buffer
+		// Set the Size of the Screen Buffer
 		COORD coord = { (short)m_nScreenWidth, (short)m_nScreenHeight };
 		if (!SetConsoleScreenBufferSize(m_hConsole, coord))
 			Error(L"SetConsoleScreenBufferSize");
 
-		// Assign screen buffer to the console
+		// Assign Screen Buffer to the Console
 		if (!SetConsoleActiveScreenBuffer(m_hConsole))
 			return Error(L"SetConsoleActiveScreenBuffer");
 		
-		// Set the font size now that the screen buffer has been assigned to the console
+		// Set the Font Size Now that the Screen Buffer has Been Assigned to the Console
 		CONSOLE_FONT_INFOEX cfi;
 		cfi.cbSize = sizeof(cfi);
 		cfi.nFont = 0;
@@ -259,15 +259,15 @@ public:
 		//if ((major > 6) || ((major == 6) && (minor >= 2) && (minor < 4)))		
 		//	wcscpy_s(cfi.FaceName, L"Raster"); // for Windows 8
 		//else
-		//	wcscpy_s(cfi.FaceName, L"Lucida Console"); // Everything other than lame Win 8
+		//	wcscpy_s(cfi.FaceName, L"Lucida Console"); // Everything Except Lame Win 8
 
 		//wcscpy_s(cfi.FaceName, L"Liberation Mono");
 		wcscpy_s(cfi.FaceName, L"Consolas");
 		if (!SetCurrentConsoleFontEx(m_hConsole, false, &cfi))
 			return Error(L"SetCurrentConsoleFontEx");
 
-		// Get screen buffer info and check the maximum allowed window size. Return
-		// error if exceeded, so user knows their dimensions/fontsize are too large
+		// Get Screen Buffer Info and Check the Maximum Allowed Window Size. Return
+		// Error if Exceeded, so User Knows Their Dimensions/Font-Size are Too Large
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		if (!GetConsoleScreenBufferInfo(m_hConsole, &csbi))
 			return Error(L"GetConsoleScreenBufferInfo");
@@ -281,11 +281,11 @@ public:
 		if (!SetConsoleWindowInfo(m_hConsole, TRUE, &m_rectWindow))
 			return Error(L"SetConsoleWindowInfo");
 
-		// Set flags to allow mouse input		
+		// Set Flags to Allow Mouse Input		
 		if (!SetConsoleMode(m_hConsoleIn, ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT))
 			return Error(L"SetConsoleMode");
 
-		// Allocate memory for screen buffer
+		// Allocate Memory for Screen Buffer
 		m_bufScreen = new CHAR_INFO[m_nScreenWidth*m_nScreenHeight];
 		memset(m_bufScreen, 0, sizeof(CHAR_INFO) * m_nScreenWidth * m_nScreenHeight);
 
@@ -409,12 +409,13 @@ public:
 		bool changed2 = false;
 		int signx1, signx2, dx1, dy1, dx2, dy2;
 		int e1, e2;
-		// Sort vertices
+
+		// Sort Vertices
 		if (y1>y2) { SWAP(y1, y2); SWAP(x1, x2); }
 		if (y1>y3) { SWAP(y1, y3); SWAP(x1, x3); }
 		if (y2>y3) { SWAP(y2, y3); SWAP(x2, x3); }
 
-		t1x = t2x = x1; y = y1;   // Starting points
+		t1x = t2x = x1; y = y1;   // Starting Points
 		dx1 = (int)(x2 - x1); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
 		else signx1 = 1;
 		dy1 = (int)(y2 - y1);
@@ -423,44 +424,52 @@ public:
 		else signx2 = 1;
 		dy2 = (int)(y3 - y1);
 
-		if (dy1 > dx1) {   // swap values
+		// Swap Values
+		if (dy1 > dx1) 
+		{   
 			SWAP(dx1, dy1);
 			changed1 = true;
 		}
-		if (dy2 > dx2) {   // swap values
+		// Swap Values
+		if (dy2 > dx2) 
+		{   
 			SWAP(dy2, dx2);
 			changed2 = true;
 		}
 
 		e2 = (int)(dx2 >> 1);
-		// Flat top, just process the second half
+		// Flat Top, Just Process the Second Half
 		if (y1 == y2) goto next;
 		e1 = (int)(dx1 >> 1);
 
-		for (int i = 0; i < dx1;) {
+		for (int i = 0; i < dx1;) 
+		{
 			t1xp = 0; t2xp = 0;
 			if (t1x<t2x) { minx = t1x; maxx = t2x; }
 			else { minx = t2x; maxx = t1x; }
-			// process first line until y value is about to change
+			// Process First Line Until Y Value is About to Change
 			while (i<dx1) {
 				i++;
 				e1 += dy1;
-				while (e1 >= dx1) {
+				while (e1 >= dx1) 
+				{
 					e1 -= dx1;
-					if (changed1) t1xp = signx1;//t1x += signx1;
+					if (changed1) t1xp = signx1;	// t1x += signx1;
 					else          goto next1;
 				}
 				if (changed1) break;
 				else t1x += signx1;
 			}
-			// Move line
+			// Move Line
 		next1:
-			// process second line until y value is about to change
-			while (1) {
+			// Process Second Line Until Y Value is About to Change
+			while (1) 
+			{
 				e2 += dy2;
-				while (e2 >= dx2) {
+				while (e2 >= dx2) 
+				{
 					e2 -= dx2;
-					if (changed2) t2xp = signx2;//t2x += signx2;
+					if (changed2) t2xp = signx2;	// t2x += signx2;
 					else          goto next2;
 				}
 				if (changed2)     break;
@@ -469,8 +478,8 @@ public:
 		next2:
 			if (minx>t1x) minx = t1x; if (minx>t2x) minx = t2x;
 			if (maxx<t1x) maxx = t1x; if (maxx<t2x) maxx = t2x;
-			drawline(minx, maxx, y);    // Draw line from min to max points found on the y
-										 // Now increase y
+			drawline(minx, maxx, y);			   // Draw Line From Min to Max Points Found on the Y
+												   // Then Increase Y
 			if (!changed1) t1x += signx1;
 			t1x += t1xp;
 			if (!changed2) t2x += signx2;
@@ -480,13 +489,15 @@ public:
 
 		}
 	next:
-		// Second half
+		// Second Half
 		dx1 = (int)(x3 - x2); if (dx1<0) { dx1 = -dx1; signx1 = -1; }
 		else signx1 = 1;
 		dy1 = (int)(y3 - y2);
 		t1x = x2;
 
-		if (dy1 > dx1) {   // swap values
+		// Swap Values
+		if (dy1 > dx1) 
+		{  
 			SWAP(dy1, dx1);
 			changed1 = true;
 		}
@@ -494,16 +505,19 @@ public:
 
 		e1 = (int)(dx1 >> 1);
 
-		for (int i = 0; i <= dx1; i++) {
+		for (int i = 0; i <= dx1; i++) 
+		{
 			t1xp = 0; t2xp = 0;
 			if (t1x<t2x) { minx = t1x; maxx = t2x; }
 			else { minx = t2x; maxx = t1x; }
-			// process first line until y value is about to change
-			while (i<dx1) {
+			// Process First Line Until Y Value is About to Change
+			while (i<dx1) 
+			{
 				e1 += dy1;
-				while (e1 >= dx1) {
+				while (e1 >= dx1) 
+				{
 					e1 -= dx1;
-					if (changed1) { t1xp = signx1; break; }//t1x += signx1;
+					if (changed1) { t1xp = signx1; break; }		// t1x += signx1;
 					else          goto next3;
 				}
 				if (changed1) break;
@@ -511,10 +525,12 @@ public:
 				if (i<dx1) i++;
 			}
 		next3:
-			// process second line until y value is about to change
-			while (t2x != x3) {
+			// Process Second Line Until Y Value is About to Change
+			while (t2x != x3) 
+			{
 				e2 += dy2;
-				while (e2 >= dx2) {
+				while (e2 >= dx2) 
+				{
 					e2 -= dx2;
 					if (changed2) t2xp = signx2;
 					else          goto next4;
@@ -543,16 +559,16 @@ public:
 		int p = 3 - 2 * r;
 		if (!r) return;
 
-		while (y >= x) // only formulate 1/8 of circle
+		while (y >= x) // Only Formulate 1/8 of Circle
 		{
-			Draw(xc - x, yc - y, c, col);//upper left left
-			Draw(xc - y, yc - x, c, col);//upper upper left
-			Draw(xc + y, yc - x, c, col);//upper upper right
-			Draw(xc + x, yc - y, c, col);//upper right right
-			Draw(xc - x, yc + y, c, col);//lower left left
-			Draw(xc - y, yc + x, c, col);//lower lower left
-			Draw(xc + y, yc + x, c, col);//lower lower right
-			Draw(xc + x, yc + y, c, col);//lower right right
+			Draw(xc - x, yc - y, c, col);// Upper Left Left
+			Draw(xc - y, yc - x, c, col);// Upper Upper Left
+			Draw(xc + y, yc - x, c, col);// Upper Upper Right
+			Draw(xc + x, yc - y, c, col);// Upper Right Right
+			Draw(xc - x, yc + y, c, col);// Lower Left Left
+			Draw(xc - y, yc + x, c, col);// Lower Lower Left
+			Draw(xc + y, yc + x, c, col);// Lower Lower Right
+			Draw(xc + x, yc + y, c, col);// Lower Right Right
 			if (p < 0) p += 4 * x++ + 6;
 			else p += 4 * (x++ - y--) + 10;
 		}
@@ -560,7 +576,7 @@ public:
 
 	void FillCircle(int xc, int yc, int r, short c = 0x2588, short col = 0x000F)
 	{
-		// Taken from wikipedia
+		// Taken From Wikipedia
 		int x = 0;
 		int y = r;
 		int p = 3 - 2 * r;
@@ -574,7 +590,7 @@ public:
 
 		while (y >= x)
 		{
-			// Modified to draw scan-lines instead of edges
+			// Modified to Draw Scan-Lines Instead of Edges
 			drawline(xc - x, xc + x, yc - y);
 			drawline(xc - y, xc + y, yc - x);
 			drawline(xc - x, xc + x, yc + y);
@@ -616,10 +632,10 @@ public:
 
 	void DrawWireFrameModel(const std::vector<std::pair<float, float>> &vecModelCoordinates, float x, float y, float r = 0.0f, float s = 1.0f, short col = FG_WHITE, short c = PIXEL_SOLID)
 	{
-		// pair.first = x coordinate
-		// pair.second = y coordinate
+		// Pair.first = X Coordinate
+		// Pair.second = Y Coordinate
 
-		// Create translated model vector of coordinate pairs
+		// Create Translated Model Vector of Coordinate Pairs
 		std::vector<std::pair<float, float>> vecTransformedCoordinates;
 		int verts = vecModelCoordinates.size();
 		vecTransformedCoordinates.resize(verts);
@@ -663,11 +679,11 @@ public:
 public:
 	void Start()
 	{	
-		// Start the thread
+		// Start the Thread
 		m_bAtomActive = true;
 		std::thread t = std::thread(&ophoisConsoleGameEngine::GameThread, this);
 
-		// Wait for thread to be exited
+		// Wait For Thread to be Exited
 		t.join();
 	}
 
@@ -684,16 +700,16 @@ public:
 private:
 	void GameThread()
 	{
-		// Create user resources as part of this thread
+		// Create User Resources as Part of This Thread
 		if (!OnUserCreate()) 
 			m_bAtomActive = false;
 
-		// Check if sound system should be enabled
+		// Check If Sound System Should Be Enabled
 		if (m_bEnableSound)
 		{
 			if (!CreateAudio())
 			{
-				m_bAtomActive = false; // Failed to create audio system			
+				m_bAtomActive = false; // Failed to Create Audio System			
 				m_bEnableSound = false;
 			}
 		}
@@ -703,7 +719,7 @@ private:
 
 		while (m_bAtomActive)
 		{
-			// Run as fast as possible
+			// Run as Fast as Possible
 			while (m_bAtomActive)
 			{
 				// Handle Timing
@@ -737,15 +753,15 @@ private:
 					m_keyOldState[i] = m_keyNewState[i];
 				}
 
-				// Handle Mouse Input - Check for window events
+				// Handle Mouse Input and Check for Window Events
 				INPUT_RECORD inBuf[32];
 				DWORD events = 0;
 				GetNumberOfConsoleInputEvents(m_hConsoleIn, &events);
 				if (events > 0)
 					ReadConsoleInput(m_hConsoleIn, inBuf, events, &events);
 
-				// Handle events - we only care about mouse clicks and movement
-				// for now
+				// Handle Events Only About Mouse Clicks and Movement
+				// for Now
 				for (DWORD i = 0; i < events; i++)
 				{
 					switch (inBuf[i].EventType)
@@ -783,7 +799,6 @@ private:
 
 					default:
 						break;
-						// We don't care just at the moment
 					}
 				}
 
@@ -814,7 +829,7 @@ private:
 				if (!OnUserUpdate(fElapsedTime))
 					m_bAtomActive = false;
 
-				// Update Title & Present Screen Buffer
+				// Update Title and Present Screen Buffer
 				wchar_t s[256];
 				swprintf_s(s, 256, L"Ophois Console Game Engine - %s - FPS: %3.2f", m_sAppName.c_str(), 1.0f / fElapsedTime);
 				SetConsoleTitle(s);
@@ -823,20 +838,20 @@ private:
 
 			if (m_bEnableSound)
 			{
-				// Close and Clean up audio system
+				// Close and Clean Up Audio System
 			}
 
-			// Allow the user to free resources if they have overrided the destroy function
+			// Allow User to Free Resources If They Have Overrided the Destroy Function
 			if (OnUserDestroy())
 			{
-				// User has permitted destroy, so exit and clean up
+				// User DID Permit Destroy, So Exit and Clean Up
 				delete[] m_bufScreen;
 				SetConsoleActiveScreenBuffer(m_hOriginalConsole);
 				m_cvGameFinished.notify_one();
 			}
 			else
 			{
-				// User denied destroy for some reason, so continue running
+				// User DENIED Destroy for Some Reason, So Continue Running
 				m_bAtomActive = true;
 			}
 		}
@@ -847,12 +862,12 @@ public:
 	virtual bool OnUserCreate()							= 0;
 	virtual bool OnUserUpdate(float fElapsedTime)		= 0;	
 
-	// Optional for clean up 
+	// Optional for Clean Up 
 	virtual bool OnUserDestroy()						{ return true; }
 
 
 
-protected: // Audio Engine =====================================================================
+protected: // Audio Engine =====================================================================*
 
 	class ophoisAudioSample
 	{
@@ -864,7 +879,7 @@ protected: // Audio Engine =====================================================
 
 		ophoisAudioSample(std::wstring sWavFile)
 		{
-			// Load Wav file and convert to float format
+			// Load Wav File and Convert to Float Format
 			FILE *f = nullptr;
 			_wfopen_s(&f, sWavFile.c_str(), L"rb");
 			if (f == nullptr)
@@ -873,45 +888,45 @@ protected: // Audio Engine =====================================================
 			char dump[4];
 			std::fread(&dump, sizeof(char), 4, f); // Read "RIFF"
 			if (strncmp(dump, "RIFF", 4) != 0) return;
-			std::fread(&dump, sizeof(char), 4, f); // Not Interested
+			std::fread(&dump, sizeof(char), 4, f); 
 			std::fread(&dump, sizeof(char), 4, f); // Read "WAVE"
 			if (strncmp(dump, "WAVE", 4) != 0) return;
 
-			// Read Wave description chunk
-			std::fread(&dump, sizeof(char), 4, f); // Read "fmt "
-			std::fread(&dump, sizeof(char), 4, f); // Not Interested
-			std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f); // Read Wave Format Structure chunk
-																	// Note the -2, because the structure has 2 bytes to indicate its own size
-																	// which are not in the wav file
+			// Read Wave Description Chunk
+			std::fread(&dump, sizeof(char), 4, f); // Read "FMT "
+			std::fread(&dump, sizeof(char), 4, f); 
+			std::fread(&wavHeader, sizeof(WAVEFORMATEX) - 2, 1, f); // Read Wave Format Structure Chunk
+																	// Note the -2, the Structure Has 2 Bytes to Indicate its Own Size
+																	// Which Are Not in the Wav File
 
-			// Just check if wave format is compatible with CGE
+			// Check if Wave Format is Compatible With CGE
 			if (wavHeader.wBitsPerSample != 16 || wavHeader.nSamplesPerSec != 44100)
 			{
 				std::fclose(f);
 				return;
 			}
 
-			// Search for audio data chunk
+			// Search For Audio Data Chunk
 			long nChunksize = 0;
-			std::fread(&dump, sizeof(char), 4, f); // Read chunk header
-			std::fread(&nChunksize, sizeof(long), 1, f); // Read chunk size
+			std::fread(&dump, sizeof(char), 4, f); // Read Chunk Header
+			std::fread(&nChunksize, sizeof(long), 1, f); // Read Chunk Size
 			while (strncmp(dump, "data", 4) != 0)
 			{
-				// Not audio data, so just skip it
+				// Not Audio Data, So Skip
 				std::fseek(f, nChunksize, SEEK_CUR);
 				std::fread(&dump, sizeof(char), 4, f);
 				std::fread(&nChunksize, sizeof(long), 1, f);
 			}
 
-			// Finally got to data, so read it all in and convert to float samples
+			// Finally Got to Data, So Read it All In and Convert to Float Samples
 			nSamples = nChunksize / (wavHeader.nChannels * (wavHeader.wBitsPerSample >> 3));
 			nChannels = wavHeader.nChannels;
 			
-			// Create floating point buffer to hold audio sample
+			// Create Floating Point Buffer to Hold Audio Sample
 			fSample = new float[nSamples * nChannels];
 			float *pSample = fSample;
 			
-			// Read in audio data and normalise
+			// Read in Audio Data and Normalise
 			for (long i = 0; i < nSamples; i++)
 			{
 				for (int c = 0; c < nChannels; c++)
@@ -923,7 +938,7 @@ protected: // Audio Engine =====================================================
 				}
 			}
 
-			// All done, flag sound as valid
+			// All Done, Flag Sound as Valid
 			std::fclose(f);
 			bSampleValid = true;
 		}
@@ -935,12 +950,12 @@ protected: // Audio Engine =====================================================
 		bool bSampleValid = false;
 	};
 	
-	// This vector holds all loaded sound samples in memory
+	// This Vector Holds All Loaded Sound Samples in Memory
 	std::vector<ophoisAudioSample> vecAudioSamples;
 
-	// This structure represents a sound that is currently playing. It only
-	// holds the sound ID and where this instance of it is up to for its
-	// current playback
+	// This Structure Represents A Sound That is Currently Playing. It Only
+	// Holds the Sound ID and Where This Instance Of it is Up to For Its
+	// Current Playback
 	struct sCurrentlyPlayingSample
 	{
 		int nAudioSampleID = 0;
@@ -950,8 +965,8 @@ protected: // Audio Engine =====================================================
 	};
 	std::list<sCurrentlyPlayingSample> listActiveSamples;
 
-	// Load a 16-bit WAVE file @ 44100Hz ONLY into memory. A sample ID
-	// number is returned if successful, otherwise -1
+	// Load A 16-bit WAVE File @ 44100Hz ONLY Into Memory. A Sample ID
+	// Number is Returned If Successful, Otherwise -1
 	unsigned int LoadAudioSample(std::wstring sWavFile)
 	{
 		if (!m_bEnableSound)
@@ -967,7 +982,7 @@ protected: // Audio Engine =====================================================
 			return -1;
 	}
 
-	// Add sample 'id' to the mixers sounds to play list
+	// Add Sample 'ID' To the Mixers Sounds To Play List
 	void PlaySample(int id, bool bLoop = false)
 	{
 		sCurrentlyPlayingSample a;
@@ -983,7 +998,7 @@ protected: // Audio Engine =====================================================
 
 	}
 
-	// The audio system uses by default a specific wave format
+	// The Audio System Uses by Default A Specific Wave Format
 	bool CreateAudio(unsigned int nSampleRate = 44100, unsigned int nChannels = 1,
 		unsigned int nBlocks = 8, unsigned int nBlockSamples = 512)
 	{
@@ -998,7 +1013,7 @@ protected: // Audio Engine =====================================================
 		m_pBlockMemory = nullptr;
 		m_pWaveHeaders = nullptr;
 
-		// Device is available
+		// Device IS Available
 		WAVEFORMATEX waveFormat;
 		waveFormat.wFormatTag = WAVE_FORMAT_PCM;
 		waveFormat.nSamplesPerSec = m_nSampleRate;
@@ -1008,7 +1023,7 @@ protected: // Audio Engine =====================================================
 		waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
 		waveFormat.cbSize = 0;
 
-		// Open Device if valid
+		// Open Device If Valid
 		if (waveOutOpen(&m_hwDevice, WAVE_MAPPER, &waveFormat, (DWORD_PTR)waveOutProcWrap, (DWORD_PTR)this, CALLBACK_FUNCTION) != S_OK)
 			return DestroyAudio();
 		
@@ -1023,7 +1038,7 @@ protected: // Audio Engine =====================================================
 			return DestroyAudio();
 		ZeroMemory(m_pWaveHeaders, sizeof(WAVEHDR) * m_nBlockCount);
 
-		// Link headers to block memory
+		// Link Headers To Block Memory
 		for (unsigned int n = 0; n < m_nBlockCount; n++)
 		{
 			m_pWaveHeaders[n].dwBufferLength = m_nBlockSamples * sizeof(short);
@@ -1033,20 +1048,20 @@ protected: // Audio Engine =====================================================
 		m_bAudioThreadActive = true;
 		m_AudioThread = std::thread(&ophoisConsoleGameEngine::AudioThread, this);
 
-		// Start the ball rolling with the sound delivery thread
+		// Start the Ball Rolling with the Sound Delivery Thread
 		std::unique_lock<std::mutex> lm(m_muxBlockNotZero);
 		m_cvBlockNotZero.notify_one();
 		return true;
 	}
 
-	// Stop and clean up audio system
+	// Stop and Clean Up Audio System
 	bool DestroyAudio()
 	{
 		m_bAudioThreadActive = false;
 		return false;
 	}
 
-	// Handler for soundcard request for more data
+	// Handler For Soundcard Request For More Data
 	void waveOutProc(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwParam1, DWORD dwParam2)
 	{
 		if (uMsg != WOM_DONE) return;
@@ -1055,40 +1070,40 @@ protected: // Audio Engine =====================================================
 		m_cvBlockNotZero.notify_one();
 	}
 
-	// Static wrapper for sound card handler
+	// Static Wrapper For Sound Card Handler
 	static void CALLBACK waveOutProcWrap(HWAVEOUT hWaveOut, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 	{
 		((ophoisConsoleGameEngine*)dwInstance)->waveOutProc(hWaveOut, uMsg, dwParam1, dwParam2);
 	}
 
-	// Audio thread. This loop responds to requests from the soundcard to fill 'blocks'
-	// with audio data. If no requests are available it goes dormant until the sound
-	// card is ready for more data. The block is fille by the "user" in some manner
-	// and then issued to the soundcard.
+	// Audio Thread. This Loop Responds to Requests From the Soundcard To Fill 'Blocks'
+	// With Audio Data. If No Requests are Available it Goes Dormant Until the Sound
+	// Card is Ready For More Data. The Block is Filled By the "User" in Some Manner
+	// and Then Issued To The Soundcard.
 	void AudioThread()
 	{
 		m_fGlobalTime = 0.0f;
 		float fTimeStep = 1.0f / (float)m_nSampleRate;
 
-		// Goofy hack to get maximum integer for a type at run-time
+		// Goofy Hack to Get Maximum Integer For A Type At Run-Time
 		short nMaxSample = (short)pow(2, (sizeof(short) * 8) - 1) - 1;
 		float fMaxSample = (float)nMaxSample;
 		short nPreviousSample = 0;
 
 		while (m_bAudioThreadActive)
 		{
-			// Wait for block to become available
+			// Wait For Block To Become Available
 			if (m_nBlockFree == 0)
 			{
 				std::unique_lock<std::mutex> lm(m_muxBlockNotZero);
-				while (m_nBlockFree == 0) // sometimes, Windows signals incorrectly
+				while (m_nBlockFree == 0)							// Sometimes, of Course, Windows Signals Incorrectly
 					m_cvBlockNotZero.wait(lm);
 			}
 
-			// Block is here, so use it
+			// Block Is Here, So Use It
 			m_nBlockFree--;
 
-			// Prepare block for processing
+			// Prepare Block For Processing
 			if (m_pWaveHeaders[m_nBlockCurrent].dwFlags & WHDR_PREPARED)
 				waveOutUnprepareHeader(m_hwDevice, &m_pWaveHeaders[m_nBlockCurrent], sizeof(WAVEHDR));
 
@@ -1116,7 +1131,7 @@ protected: // Audio Engine =====================================================
 				m_fGlobalTime = m_fGlobalTime + fTimeStep;
 			}
 
-			// Send block to sound device
+			// Send Block To Sound Device
 			waveOutPrepareHeader(m_hwDevice, &m_pWaveHeaders[m_nBlockCurrent], sizeof(WAVEHDR));
 			waveOutWrite(m_hwDevice, &m_pWaveHeaders[m_nBlockCurrent], sizeof(WAVEHDR));
 			m_nBlockCurrent++;
@@ -1124,59 +1139,60 @@ protected: // Audio Engine =====================================================
 		}
 	}
 
-	// Overridden by user if they want to generate sound in real-time
+	// Overridden By User If They Want To Generate Sound In Real-Time
 	virtual float onUserSoundSample(int nChannel, float fGlobalTime, float fTimeStep)
 	{
 		return 0.0f;
 	}
 
-	// Overriden by user if they want to manipulate the sound before it is played
+	// Overriden By User If They Want To Manipulate The Sound Before It's Played
 	virtual float onUserSoundFilter(int nChannel, float fGlobalTime, float fSample)
 	{
 		return fSample;
 	}
 
-	// The Sound Mixer - If the user wants to play many sounds simultaneously, and
-	// perhaps the same sound overlapping itself, then you need a mixer, which
+	// The Sound Mixer: If the user wants to play many sounds simultaneously, even
+	// the same sound overlapping itself, then a mixer is necessary, which
 	// takes input from all sound sources for that audio frame. This mixer maintains
 	// a list of sound locations for all concurrently playing audio samples. Instead
-	// of duplicating audio data, we simply store the fact that a sound sample is in
-	// use and an offset into its sample data. As time progresses we update this offset
-	// until it is beyound the length of the sound sample it is attached to. At this
-	// point we remove the playing souind from the list.
+	// of duplicating audio data, it simply stores the fact that a sound sample is in
+	// use and an offset into its sample data. As time progresses it updates this offset
+	// until it is beyound the length of the sound sample it's attached to. At this
+	// point it removes the playing sound from the list.
 	//
-	// Additionally, the users application may want to generate sound instead of just
-	// playing audio clips (think a synthesizer for example) in whcih case we also
-	// provide an "onUser..." event to allow the user to return a sound for that point
+	// Additionally, the user's application may want to generate sound instead of just
+	// playing audio clips (synthesizer, for example) in which case it also
+	// provides an "onUser..." event to allow the user to return a sound for that point
 	// in time.
 	//
 	// Finally, before the sound is issued to the operating system for performing, the
 	// user gets one final chance to "filter" the sound, perhaps changing the volume
 	// or adding groovy effects
+
 	float GetMixerOutput(int nChannel, float fGlobalTime, float fTimeStep)
 	{
-		// Accumulate sample for this channel
+		// Accumulate Sample For This Channel
 		float fMixerSample = 0.0f;
 
 		for (auto &s : listActiveSamples)
 		{
-			// Calculate sample position
+			// Calculate Sample Position
 			s.nSamplePosition += (long)((float)vecAudioSamples[s.nAudioSampleID - 1].wavHeader.nSamplesPerSec * fTimeStep);
 
-			// If sample position is valid add to the mix
+			// If Sample Position Is Valid Add To The Mix
 			if (s.nSamplePosition < vecAudioSamples[s.nAudioSampleID - 1].nSamples)
 				fMixerSample += vecAudioSamples[s.nAudioSampleID - 1].fSample[(s.nSamplePosition * vecAudioSamples[s.nAudioSampleID - 1].nChannels) + nChannel];
 			else
-				s.bFinished = true; // Else sound has completed
+				s.bFinished = true;					// Else Sound Has Completed
 		}
 
-		// If sounds have completed then remove them
+		// If Sounds Have Completed Then Remove Them
 		listActiveSamples.remove_if([](const sCurrentlyPlayingSample &s) {return s.bFinished; });
 
-		// The users application might be generating sound, so grab that if it exists
+		// The Users Application Might Be Generating Sound, So Grab That If It Exists
 		fMixerSample += onUserSoundSample(nChannel, fGlobalTime, fTimeStep);
 
-		// Return the sample via an optional user override to filter the sound
+		// Return The Sample Via An Optional User Override To Filter Sound
 		return onUserSoundFilter(nChannel, fGlobalTime, fMixerSample);
 	}
 
@@ -1232,14 +1248,14 @@ protected:
 
 	static BOOL CloseHandler(DWORD evt)
 	{
-		// Note this gets called in a seperate OS thread, so it must
-		// only exit when the game has finished cleaning up, or else
-		// the process will be killed before OnUserDestroy() has finished
+		// Note This Gets Called In A Seperate OS Thread, So It Must
+		// Only Exit When The Game Has Finished Cleaning Up, Or Else
+		// The Process Will Be Killed Before OnUserDestroy() Has Finished
 		if (evt == CTRL_CLOSE_EVENT)
 		{
 			m_bAtomActive = false;
 
-			// Wait for thread to be exited
+			// Wait For Thread To Be Exited
 			std::unique_lock<std::mutex> ul(m_muxGame);
 			m_cvGameFinished.wait(ul);
 		}
@@ -1263,14 +1279,14 @@ protected:
 	bool m_bConsoleInFocus = true;	
 	bool m_bEnableSound = false;
 
-	// These need to be static because of the OnDestroy call the OS may make. The OS
-	// spawns a special thread just for that
+	// These Need To Be Static Because Of The OnDestroy Call The OS May Make. The OS
+	// Spawns A Special Thread Just For That
 	static std::atomic<bool> m_bAtomActive;
 	static std::condition_variable m_cvGameFinished;
 	static std::mutex m_muxGame;
 };
 
-// Define our static variables
+// Define Our Static Variables
 std::atomic<bool> ophoisConsoleGameEngine::m_bAtomActive(false);
 std::condition_variable ophoisConsoleGameEngine::m_cvGameFinished;
 std::mutex ophoisConsoleGameEngine::m_muxGame;
